@@ -1,0 +1,19 @@
+﻿Name,Overview text,Tag
+IoT System Integration,"Integration IoT devices into AWS, Azure, Google IoT platforms and custom servers",Service
+Firmware Development,"Bare-Metal & RTOS-based Firmware, Embedded Linux, Yocto",Service
+Edge AI & IoT Development,Develop Edge AI gateways and Integrate hardware into cloud-based AI platform,Service
+QA Testing & Rapid Prototyping,"I support turning design into reliable, presentation-ready prototypes.",Service
+Schematic Design & PCB Layout,"Schematic Design, PCB layouts, Gerber, BOM, Pick-and-Place ",Service
+Debugging & Troubleshooting,"Support debugging, troubleshooting and reverse engineering about hardware design and microcontroller firmware.",Service
+Arduino,,
+Embedded Systems Development,,Skill
+Hardware Design & Prototyping,,Skill
+IoT Device Engineering,,Skill
+Edge AI & Signal Processing,,Skill
+Debugging & Troubleshooting,,Skill
+Connectivity & Protocols,,Skill
+Tools & Platforms,,Skill
+Debugging & Troubleshooting,,Skill
+Rapid Prototyping & MVP Development,,Skill
+QA & Reliability Testing,,Skill
+,,Service

@@ -1,0 +1,798 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>ESP32-S3 based UVC &amp; Ballast Monitoring System</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+/* Override strong tags inside headings to maintain consistent weight */
+h1 strong,
+h2 strong,
+h3 strong {
+	font-weight: 600;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 10px;
+	padding: 1rem;
+}
+
+/* For default-background callouts, render the border outline. */
+.callout.block-color-default_background {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+/*
+ * Toggles and callouts hold arbitrary content, so they can easily be taller
+ * than a page. They must stay breakable: avoiding breaks inside them makes
+ * Chromium push the whole block onto the next page, which leaves the previous
+ * page mostly empty before every long toggle.
+ */
+details,
+aside {
+	margin: 1.25em 0;
+}
+
+/* Keep a toggle's title on the same page as the start of its content. */
+summary {
+	page-break-after: avoid;
+	break-after: avoid;
+}
+
+/*
+ * Toggle headings render as <h1/h2/h3 style="display:inline-block"> inside
+ * <summary>. Without this reset, the heading's margin-top pushes it below the
+ * ::marker (▼), so the triangle and the title appear on separate lines.
+ */
+summary h1,
+summary h2,
+summary h3,
+summary h4 {
+	margin-top: 0;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+
+	table.collection-content {
+		width: 100%;
+		table-layout: fixed;
+	}
+
+	table.collection-content th,
+	table.collection-content td {
+		overflow-wrap: anywhere;
+	}
+
+	table.collection-content td > .user,
+	table.collection-content td > time {
+		white-space: pre-wrap;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content-wrapper {
+	overflow-x: auto;
+}
+
+@media only print {
+	.collection-content-wrapper {
+		overflow-x: visible;
+	}
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	gap: 46px;
+}
+
+.column {
+	min-width: 0;
+	overflow: hidden;
+}
+
+.column > *:first-child {
+	margin-top: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding-inline: 0.125rem;
+	padding-block: 0.375rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+table {
+	border-collapse: collapse;
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol.numbered-list.numbered-list-digits-2 {
+	padding-inline-start: 2em;
+}
+
+ol.numbered-list.numbered-list-digits-3plus {
+	padding-inline-start: 2.4em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+/*
+ * Render emoji icons using a ::before pseudo-element to keep the glyph
+ * out of the DOM textContent traversal. This avoids double-rendering icons
+ * in callouts and page titles.
+ * NOTE(slim/html-export-pseudo-icons): I can't tagref this because it will
+ * flag as a duplicate tag after codegen.
+ */
+.icon[data-emoji]::before {
+	content: attr(data-emoji);
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.callout img.notion-static-icon {
+	width: 1em;
+	height: 1em;
+}
+
+.callout p {
+	margin: 0;
+}
+
+.callout h1,
+.callout h2,
+.callout h3 {
+	margin: 0 0 0.6rem;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	margin-right: 0.4em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+blockquote.quote-large {
+	font-size: 1.25em;
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.tab {
+	margin: 1.25em 0;
+	padding-inline: 1rem;
+	border: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", "Noto Sans Arabic", "Noto Sans Hebrew", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.highlight-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.highlight-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.highlight-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.highlight-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.highlight-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.highlight-default_background {
+	color: rgba(44, 44, 43, 1);
+}
+.highlight-gray_background {
+	background: rgba(42, 28, 0, 0.07);
+}
+.highlight-brown_background {
+	background: rgba(139, 46, 0, 0.086);
+}
+.highlight-orange_background {
+	background: rgba(224, 101, 1, 0.129);
+}
+.highlight-yellow_background {
+	background: rgba(211, 168, 0, 0.137);
+}
+.highlight-teal_background {
+	background: rgba(0, 100, 45, 0.09);
+}
+.highlight-blue_background {
+	background: rgba(0, 124, 215, 0.094);
+}
+.highlight-purple_background {
+	background: rgba(102, 0, 178, 0.078);
+}
+.highlight-pink_background {
+	background: rgba(197, 0, 93, 0.086);
+}
+.highlight-red_background {
+	background: rgba(223, 22, 0, 0.094);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(125, 122, 117, 1);
+	fill: rgba(125, 122, 117, 1);
+}
+.block-color-brown {
+	color: rgba(159, 118, 90, 1);
+	fill: rgba(159, 118, 90, 1);
+}
+.block-color-orange {
+	color: rgba(210, 123, 45, 1);
+	fill: rgba(210, 123, 45, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 148, 52, 1);
+	fill: rgba(203, 148, 52, 1);
+}
+.block-color-teal {
+	color: rgba(80, 148, 110, 1);
+	fill: rgba(80, 148, 110, 1);
+}
+.block-color-blue {
+	color: rgba(56, 125, 201, 1);
+	fill: rgba(56, 125, 201, 1);
+}
+.block-color-purple {
+	color: rgba(154, 107, 180, 1);
+	fill: rgba(154, 107, 180, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(207, 81, 72, 1);
+	fill: rgba(207, 81, 72, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(240, 239, 237, 1);
+}
+.block-color-brown_background {
+	background: rgba(245, 237, 233, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 235, 222, 1);
+}
+.block-color-yellow_background {
+	background: rgba(249, 243, 220, 1);
+}
+.block-color-teal_background {
+	background: rgba(232, 241, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(229, 242, 252, 1);
+}
+.block-color-purple_background {
+	background: rgba(243, 235, 249, 1);
+}
+.block-color-pink_background {
+	background: rgba(250, 233, 241, 1);
+}
+.block-color-red_background {
+	background: rgba(252, 233, 231, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(127, 51, 0, 0.156); }
+.select-value-color-orange { background-color: rgba(196, 88, 0, 0.203); }
+.select-value-color-yellow { background-color: rgba(209, 156, 0, 0.282); }
+.select-value-color-green { background-color: rgba(0, 96, 38, 0.156); }
+.select-value-color-blue { background-color: rgba(0, 118, 217, 0.203); }
+.select-value-color-purple { background-color: rgba(92, 0, 163, 0.141); }
+.select-value-color-pink { background-color: rgba(183, 0, 78, 0.152); }
+.select-value-color-red { background-color: rgba(206, 24, 0, 0.164); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style><style>@import url('https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex-swap.min.css')</style><style id="portfolio-case-study-overrides">.properties .property-row-status,.properties .property-row-file,.properties .property-row-select{display:none}.properties .property-icon{display:none!important}.properties .property-icon img{display:none!important}.properties .property-row-multi_select .property-icon::before{content:"#"}.properties .property-row-text:nth-of-type(2) .property-icon::before{content:"≡";font-size:17px}.properties .property-row-text:nth-of-type(3) .property-icon::before{content:"⌘";font-size:13px}</style><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="../../case-study.css"></head><body><nav class="portfolio-nav"><a href="../../index.html">Back to portfolio</a><a href="mailto:support@zyntellitech.com">Contact ↗</a></nav><article id="26f67066-34ae-80fd-988c-d975fb9318be" class="page sans"><header><h1 class="page-title" dir="auto">ESP32-S3 based UVC &amp; Ballast Monitoring System</h1><p class="page-description" dir="auto"></p><table class="properties"><tbody><tr class="property-row property-row-multi_select"><th><span class="icon property-icon"><img src="https://app.notion.com/icons/tag_gray.svg" style="width:14px;height:14px;display:block"/></span>Tags</th><td><span class="selected-value select-value-color-blue">Cloud Integration</span><span class="selected-value select-value-color-yellow">Firmware Development</span><span class="selected-value select-value-color-orange">Hardware Design</span><span class="selected-value select-value-color-gray">Mobile Development</span><span class="selected-value select-value-color-pink">Prototyping</span></td></tr><tr class="property-row property-row-text"><th><span class="icon property-icon"><img src="https://app.notion.com/icons/description_gray.svg" style="width:14px;height:14px;display:block"/></span>Description</th><td>ESP32-S3 based UVC Sensor and UVC lamps &amp; Ballasts Monitoring Sensor</td></tr><tr class="property-row property-row-text"><th><span class="icon property-icon"><img src="https://app.notion.com/icons/description_gray.svg" style="width:14px;height:14px;display:block"/></span>Skills</th><td>ESP-IDF, Flutter, AWS</td></tr><tr class="property-row property-row-status"><th><span class="icon property-icon"><img src="https://app.notion.com/icons/burst_gray.svg" style="width:14px;height:14px;display:block"/></span>Status</th><td><span class="status-value select-value-color-green"><div class="status-dot status-dot-color-green"></div>Completed</span></td></tr><tr class="property-row property-row-file"><th><span class="icon property-icon"><img src="https://app.notion.com/icons/attachment_gray.svg" style="width:14px;height:14px;display:block"/></span>Thumbnail</th><td><span style="margin-inline-end:6px"><a href="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/ConfluenceAI_UVC_monitor.png"><img style="width:20px;max-height:24px" src="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/ConfluenceAI_UVC_monitor.png" alt="ConfluenceAI_UVC monitor.png"/></a></span></td></tr><tr class="property-row property-row-select"><th><span class="icon property-icon"><img src="https://app.notion.com/icons/arrow-circle-down_gray.svg" style="width:14px;height:14px;display:block"/></span>Type</th><td><span class="selected-value select-value-color-blue">Project</span></td></tr></tbody></table></header><div class="page-body"><h3 id="26f67066-34ae-80a5-a7e6-c04a92e995e5" class="" dir="auto">Project Overview</h3><p id="26f67066-34ae-80cf-b217-dabdaf3cb4bd" class="" dir="auto">The client specializes in advanced UVC and ballast monitoring solutions that enhance air quality and disinfection safety. For this project, the client provided custom hardware, and my responsibility was to design and implement the embedded firmware, along with seamless integration into AWS IoT for secure, scalable cloud connectivity.</p><p id="26f67066-34ae-809b-a3ad-cfe496283757" class="" dir="auto">
+</p><figure id="26f67066-34ae-8028-9b92-fb060a964532" class="image" data-notion-image="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/ACLynx-Front-800w.png" dir="ltr"><a href="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/ACLynx-Front-800w.png"><img style="width:336px" src="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/ACLynx-Front-800w.png"/></a></figure><p id="26f67066-34ae-802a-b13b-fa6fad49f7ba" class="" dir="auto">
+</p><figure id="26f67066-34ae-80af-9f8f-e7d47b0b568a" class="image" data-notion-image="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/DoseEZ-Angle-800w-removebg-preview.png" dir="ltr"><a href="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/DoseEZ-Angle-800w-removebg-preview.png"><img style="width:523px" src="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/DoseEZ-Angle-800w-removebg-preview.png"/></a></figure><h3 id="26f67066-34ae-8034-9518-cecab9f70c5b" class="" dir="auto">My Role &amp; Contributions</h3><ul id="26f67066-34ae-8047-812e-dfd5821158b2" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Firmware Development (ESP32-S3)</strong><ul id="26f67066-34ae-8024-bb7a-d463f4b4195d" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Implemented firmware for data acquisition, device control, wireless communication (Wi-Fi, Bluetooth LE), and fault diagnostics.</li></ul><ul id="26f67066-34ae-802a-a317-f8f54f5e15f8" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Built drivers and system logic using ESP-IDF and FreeRTOS.</li></ul><ul id="26f67066-34ae-808f-a35d-c445dd38dabc" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Enabled secure connectivity to the cloud with MQTT and AWS IoT Core.</li></ul></li></ul><ul id="26f67066-34ae-80ad-818f-f65d032b083a" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>AWS IoT Cloud Integration</strong><ul id="26f67066-34ae-80c6-bfc3-f3c0dc490466" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Integrated with <strong>AWS IoT Core</strong> for device provisioning, messaging, and shadow management.</li></ul><ul id="26f67066-34ae-806d-a961-ffcbdbdb961a" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Configured secure authentication and data pipelines for telemetry.</li></ul><ul id="26f67066-34ae-80f3-a661-dd523a50fd69" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Implemented <strong>OTA (Over-the-Air) updates</strong> for remote firmware upgrades.</li></ul></li></ul><ul id="26f67066-34ae-80f6-b74a-fdaf6241fd96" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Flutter Mobile App Development</strong><ul id="26f67066-34ae-8009-b44d-ccda87816cbe" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Designed and developed a <strong>cross-platform mobile app</strong> (iOS &amp; Android) using Flutter.</li></ul><ul id="26f67066-34ae-802f-a32c-ec7d863453e1" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Implemented real-time data visualization of UVC and ballast performance.</li></ul><ul id="26f67066-34ae-8048-8076-db335f02c966" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Built features for device control, status monitoring, and alerts.</li></ul><ul id="26f67066-34ae-8026-a23a-d6ca52dc3d1f" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Integrated secure AWS IoT communication via MQTT for seamless cloud-device-app interaction.</li></ul></li></ul><ul id="26f67066-34ae-80bb-96ad-eb8313b5a3c9" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>System Reliability &amp; Security</strong><ul id="26f67066-34ae-8090-b984-e928314ac891" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Added device-level diagnostics and remote troubleshooting features.</li></ul><ul id="26f67066-34ae-8027-a55f-c8fe36204f7b" class="bulleted-list" dir="auto"><li style="list-style-type:circle">Ensured data encryption and secure authentication between hardware, cloud, and mobile app.</li></ul></li></ul><h3 id="26f67066-34ae-80c9-8038-dfec2e4194dd" class="" dir="auto">Key Technologies</h3><ul id="26f67066-34ae-8082-989f-fef197d1f7d9" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Hardware:</strong> ESP32-S3, UVC &amp; ballast sensors</li></ul><ul id="26f67066-34ae-80c9-b4a4-df750194b541" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Firmware:</strong> ESP-IDF (C/C++), FreeRTOS</li></ul><ul id="26f67066-34ae-80c7-8eee-d8cd9dd3bcc0" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Cloud:</strong> AWS IoT Core, MQTT, Device Shadows, OTA updates</li></ul><ul id="26f67066-34ae-808e-94be-c49183a8b8ff" class="bulleted-list" dir="auto"><li style="list-style-type:disc"><strong>Mobile App:</strong> Flutter (Dart), AWS IoT integration, Bluetooth LE, cross-platform (iOS &amp; Android)</li></ul><h3 id="26f67066-34ae-8090-a69e-e6e34468364a" class="" dir="auto">Results &amp; Impact</h3><ul id="26f67066-34ae-8037-b00b-eb31b7274718" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Successfully delivered two production-ready products (<strong>AC-Lynx</strong> and <strong>Dose-EZ</strong>) with end-to-end IoT capability.</li></ul><ul id="26f67066-34ae-8065-8719-d8e0a71d030a" class="bulleted-list" dir="auto"><li style="list-style-type:disc">The <strong>Flutter app</strong> provides customers with a simple and intuitive interface for managing devices in real time.</li></ul><ul id="26f67066-34ae-8077-a653-d1eaa1d89b15" class="bulleted-list" dir="auto"><li style="list-style-type:disc">Enabled the client to scale product deployment quickly while maintaining robust monitoring and security.</li></ul><div id="26f67066-34ae-8047-a148-f6100b82ae9b" class="column-list" data-notion-column-list="" dir="auto"><div id="26f67066-34ae-804c-9924-ff0b43619ed0" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><figure id="26f67066-34ae-805c-a06f-e95a12cf560a" class="image" data-notion-image="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-1.png" dir="ltr"><a href="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-1.png"><img style="width:331.984375px" src="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-1.png"/></a></figure></div><div id="26f67066-34ae-8055-b42b-e3611152d21e" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><figure id="26f67066-34ae-8043-b8e0-ca9ef47d44f4" class="image" data-notion-image="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-2.png" dir="ltr"><a href="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-2.png"><img style="width:331.984375px" src="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-2.png"/></a></figure></div></div><p id="26f67066-34ae-808d-b824-d1b8e2c35b7a" class="" dir="auto">
+</p><p id="26f67066-34ae-804f-9ba3-ec405f3bf3ec" class="" dir="auto">
+</p><div id="26f67066-34ae-8050-83c1-ec038b94510a" class="column-list" data-notion-column-list="" dir="auto"><div id="26f67066-34ae-80a0-9272-f64717409138" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><figure id="26f67066-34ae-80e4-a47f-c075cf0b8573" class="image" data-notion-image="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-3.png" dir="ltr"><a href="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-3.png"><img style="width:1080px" src="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-3.png"/></a></figure></div><div id="26f67066-34ae-8098-8ae7-dcb28e697258" style="width:50%" class="column" data-notion-column-ratio="0.5" dir="auto"><figure id="26f67066-34ae-80d9-b6cb-fa8bdda89268" class="image" data-notion-image="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-4.png" dir="ltr"><a href="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-4.png"><img style="width:1080px" src="ESP32-S3%20based%20UVC%20&amp;%20Ballast%20Monitoring%20System/aclynx-mobile-4.png"/></a></figure></div></div></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
