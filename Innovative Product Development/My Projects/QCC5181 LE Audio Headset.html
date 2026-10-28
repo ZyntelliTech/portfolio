@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>QCC5181 Bluetooth LE Audio Headset — ZyntelliTech</title>
+<meta name="description" content="Qualcomm QCC5181 headset development by ZyntelliTech: custom PCB design, PCM5102 DAC integration, Bluetooth audio firmware, microphone routing, and rechargeable power management.">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f1e9;color:#102a24;font:16px/1.7 system-ui,sans-serif}main{max-width:1060px;margin:auto;padding:40px 24px 72px}a{color:inherit;text-underline-offset:4px}.back{font-size:14px}.eyebrow{margin:44px 0 12px;text-transform:uppercase;letter-spacing:.12em;font-size:12px;color:#476358}h1{font-size:clamp(36px,6vw,64px);line-height:1.08;letter-spacing:-.045em;margin:0 0 24px}h2{font-size:28px;line-height:1.2;margin:42px 0 18px}h3{font-size:18px;margin:0 0 8px}p{margin:0 0 20px}.lead{font-size:20px;max-width:850px;color:#53605a}figure{margin:32px 0}img{display:block;width:100%;height:auto;border-radius:8px}figcaption{font-size:13px;color:#66706b;margin-top:10px}.tags{display:flex;flex-wrap:wrap;gap:8px;margin:24px 0}.tags span{border:1px solid #cbd0c5;border-radius:24px;padding:6px 12px;font-size:12px}.contributions{display:grid;grid-template-columns:1fr 1fr;gap:16px}.contributions article{background:#fff;padding:24px;border:1px solid #d7d8cf}.contributions p{margin:0;color:#53605a}.gallery{display:grid;grid-template-columns:1fr 1.4fr;gap:24px;align-items:start}.gallery figure{margin:0}.gallery img{max-height:600px;object-fit:contain;background:#e5e8e3}footer{border-top:1px solid #d7d8cf;margin-top:48px;padding-top:24px;font-size:14px}@media(max-width:640px){main{padding:24px 20px 48px}.contributions,.gallery{grid-template-columns:1fr}.lead{font-size:18px}}
+</style>
+<style>body{background:#f7f9fc;color:#111d36}.eyebrow,.lead,.contributions p{color:#536176}.tags span,.contributions article,footer{border-color:#d8e0ee}.pcb{background:#101820;padding:20px;border-radius:8px}.pcb img{border-radius:0}.step{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:#215bc7;margin:16px 0 4px}.contributions article p+p{margin-top:12px}</style>
+</head><body><main>
+<a class="back" href="../../index.html#work">← ZyntelliTech / Back to selected work</a>
+<p class="eyebrow">Wireless audio · Hardware &amp; embedded firmware</p>
+<h1>Bluetooth LE Audio Headset</h1>
+<p class="lead">A Qualcomm QCC5181 headset prototype developed by ZyntelliTech Development LLC, bringing wireless audio, a dedicated DAC, voice input, stereo output, and rechargeable power together on a custom PCB.</p>
+<div class="tags"><span>Qualcomm QCC5181</span><span>Bluetooth LE Audio</span><span>PCM5102 DAC</span><span>Custom PCB</span><span>Embedded Firmware</span><span>Audio Integration</span><span>Battery Charging</span></div>
+<figure><img src="QCC5181%20LE%20Audio%20Headset/cover.png" width="1536" height="1024" alt="QCC5181 headset presentation showing a complete headset concept, exploded earcup assembly, and custom PCB"><figcaption>Headset and exploded enclosure concept alongside the prototype PCB design. Enclosure fit remains subject to validation against PCB dimensions.</figcaption></figure>
+<h2>From wireless audio architecture to a headset prototype</h2>
+<p>The project brings together hardware architecture, schematic capture, custom PCB layout, Bluetooth audio firmware development and configuration, digital audio integration, and board-level debugging. The goal was to create a compact headset platform with left and right speaker output, a boom microphone for voice input, and integrated battery charging and power management.</p>
+<h2>Engineering challenges &amp; solutions</h2>
+<div class="contributions">
+<article><h3>Digital audio integration</h3><p class="step">Challenge</p><p>Bring the QCC5181 audio platform and a separate PCM5102 DAC into one coherent audio path, with firmware configuration aligned to the hardware interfaces.</p><p class="step">Solution</p><p>Developed the digital audio interface and DAC integration alongside the Bluetooth audio firmware configuration, keeping the schematic connections and audio routing aligned during bring-up.</p></article>
+<article><h3>Compact mixed-signal PCB</h3><p class="step">Challenge</p><p>Accommodate wireless circuitry, digital audio, analog signal paths, user controls, and power circuitry within a compact headset board.</p><p class="step">Solution</p><p>Designed the hardware architecture, schematics, and custom PCB layout as an integrated system, coordinating component placement and interconnect routing around the headset application.</p></article>
+<article><h3>Voice input &amp; stereo output</h3><p class="step">Challenge</p><p>Integrate a boom microphone and separate left and right speaker connections while managing the different roles of voice capture and audio playback.</p><p class="step">Solution</p><p>Engineered microphone and speaker signal routing together with the digital-to-analog output path, carrying the audio connections through schematic design, board integration, and prototype debugging.</p></article>
+<article><h3>Rechargeable power integration</h3><p class="step">Challenge</p><p>Support a battery-powered audio platform with charging and power management on the same compact board as the audio circuitry.</p><p class="step">Solution</p><p>Integrated rechargeable battery charging and power management circuitry into the custom hardware, including power-system bring-up as part of prototype development.</p></article>
+</div>
+<h2>Custom hardware, built around the audio system</h2>
+<figure><div class="pcb"><img loading="lazy" src="QCC5181%20LE%20Audio%20Headset/pcb.png" width="2160" height="708" alt="3D rendering of the custom blue headset PCB showing the shielded module, connectors, switches, and power and audio components"></div><figcaption>Custom headset PCB 3D rendering. The board view documents component integration and layout; it is not a photograph of an assembled board.</figcaption></figure>
+<ul>
+<li><strong>Qualcomm QCC5181:</strong> Bluetooth audio SoC at the center of the LE Audio headset platform.</li>
+<li><strong>PCM5102 DAC:</strong> Dedicated digital-to-analog conversion for the playback audio path.</li>
+<li><strong>Boom microphone:</strong> Voice input for hands-free communication.</li>
+<li><strong>Left and right speakers:</strong> Stereo audio output.</li>
+<li><strong>Battery charging &amp; power management:</strong> Integrated circuitry for rechargeable operation.</li>
+<li><strong>Custom PCB:</strong> Compact integration of wireless, audio, controls, and power functions.</li>
+</ul>
+<h2>Development results</h2>
+<p>The project produced a custom QCC5181 headset prototype platform, with hardware design, Bluetooth audio firmware development and configuration, DAC integration, microphone and speaker routing, and rechargeable power circuitry brought together through hardware bring-up and debugging.</p>
+<p>The engineering result is a foundation for continued headset evaluation and refinement, supported by the custom PCB design and an enclosure concept. Measured audio quality, wireless range, latency, battery runtime, and final mechanical fit are not reported in this case study.</p>
+<h2>Skills demonstrated</h2>
+<p>Wireless audio system architecture · Schematic design · Custom PCB layout · Embedded audio firmware · Digital audio interfaces · DAC integration · Microphone and speaker routing · Battery charging and power management · Hardware bring-up · Cross-disciplinary debugging and prototyping.</p>
+<footer><p>Developed by <strong>ZyntelliTech Development LLC</strong></p><p><a href="../../index.html#work">Explore more projects</a> · <a href="mailto:support@zyntellitech.com?subject=Wireless%20audio%20project%20inquiry">Discuss a wireless audio project ↗</a></p></footer>
+</main></body></html>
